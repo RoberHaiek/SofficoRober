@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class MyFirstProgramm {
+public class MyFirstProgram {
 
 
 	public static void main( String [] args ) throws IOException, InterruptedException {
@@ -14,7 +14,7 @@ public class MyFirstProgramm {
 
 			if( ! prototyp.doIt() )
 
-				MyHelper.helpMe( new File( args[ 0 ] ),  new File( args[ 1 ] ) );
+				FileContentCopier.helpMe( new File( args[ 0 ] ),  new File( args[ 1 ] ) );
 
 			Thread.sleep( 10000 );
 		}
