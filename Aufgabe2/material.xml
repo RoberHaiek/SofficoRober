@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<material_export>
+	<record>
+		<matnr>4711</matnr>
+		<price>1.2</price>
+		<description>
+			<text lang="DE" value="Schraube" />
+			<text lang="EN" value="Screw" />
+		</description>
+	</record>
+	<record>
+		<matnr>4712</matnr>
+		<price>5.5</price>
+		<description>
+			<text lang="DE" value="Nagel" />
+			<text lang="EN" value="Nail" />
+		</description>
+	</record>
+</material_export>
