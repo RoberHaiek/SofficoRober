@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class MyHelper {
+public class FileContentCopier {
 
 
 	public static void helpMe( File source, File target ) throws IOException {
