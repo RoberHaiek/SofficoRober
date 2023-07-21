@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/adaptive" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/alwaysencrypted" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/azureactivedirectoryauthentication" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/connections" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/constrained" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/dataclassification" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/datatypes" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/resultsets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/jdbcmssql/samples/sparse" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jdbcmssql" level="project" />
+  </component>
+</module>
