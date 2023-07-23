@@ -1,6 +1,9 @@
 public class ShortText {
     private String lang;
     private String text;
+    public static String TEXT = "text";
+    public static String LANG = "lang";
+    public static String VALUE = "value";
 
     public String getLang() {
         return lang;

@@ -11,6 +11,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,10 +22,12 @@ public class XmlFileReader {
 
     private final Path folderPath;
     private final int period = 5;
+    private final List<String> fileTypes;
     private static final Logger logger = Logger.getLogger(XmlFileReader.class.getName());
 
     public XmlFileReader(Path folderPath) {
         this.folderPath = folderPath;
+        this.fileTypes = Arrays.asList(".xml");
     }
 
     public void startWatching() {
@@ -35,12 +38,12 @@ public class XmlFileReader {
                 Files.walkFileTree(folderPath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".xml")) {
-                            logger.info("New XML file detected: " + file);
+                        if (file.toString().endsWith(fileTypes.get(0))) {
+                            logger.info( Constants.NEW_FILE_DETECTED + file);
                             Path fullPath = folderPath.resolve(file);
                             try {
-                                readXMLFile(fullPath);
-                                logger.info("parsing done");
+                                readXmlFile(fullPath);
+                                logger.info(Constants.PARSING_SUCCESSFUL);
                             } catch (ParserConfigurationException e) {
                                 throw new RuntimeException(e);
                             } catch (SAXException e) {
@@ -60,7 +63,7 @@ public class XmlFileReader {
         executor.scheduleAtFixedRate(folderWatcherTask, 0, period, TimeUnit.SECONDS);
     }
 
-    private void readXMLFile(Path filePath) throws IOException, ParserConfigurationException, SAXException, InterruptedException {
+    private void readXmlFile(Path filePath) throws IOException, ParserConfigurationException, SAXException, InterruptedException {
 
         List<Material> materials = new ArrayList<>();
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -70,34 +73,34 @@ public class XmlFileReader {
 
         validator(document);
 
-        NodeList nList = document.getElementsByTagName("record");
+        NodeList nodeList = document.getElementsByTagName(Material.RECORD);
 
-        for (int temp = 0; temp < nList.getLength(); temp++) {
+        for (int currentNodeIndex = 0; currentNodeIndex < nodeList.getLength(); currentNodeIndex++) {
 
-            Node node = nList.item(temp);
+            Node node = nodeList.item(currentNodeIndex);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
 
                 Element eElement = (Element) node;
                 Material material = new Material();
-                material.setMatNr(eElement.getElementsByTagName("matnr").item(0).getTextContent());
-                material.setPrice(Double.parseDouble(eElement.getElementsByTagName("price").item(0).getTextContent()));
-                addDescriptionElements(eElement.getElementsByTagName("description"), material);
+                material.setMatNr(eElement.getElementsByTagName(Material.MATNR).item(0).getTextContent());
+                material.setPrice(Double.parseDouble(eElement.getElementsByTagName(Material.PRICE).item(0).getTextContent()));
+                addDescriptionElements(eElement.getElementsByTagName(Material.DESCRIPTION), material);
                 materials.add(material);
             }
         }
 
-        Thread.sleep(1000);
+        Thread.sleep(Constants.THREAD_SLEEP_TIME);
     }
 
     private void addDescriptionElements(NodeList descriptionNodes, Material material){
         List<ShortText> shortTexts = new ArrayList<>();
         for(int i=0; i<descriptionNodes.getLength(); i++){
             Element element = (Element) descriptionNodes.item(i);
-            NodeList textNodes = element.getElementsByTagName("text");
-            for (int k = 0; k < textNodes.getLength(); k++) {
-                Element textElement = (Element) textNodes.item(k);
-                String lang = textElement.getAttribute("lang");
-                String value = textElement.getAttribute("value");
+            NodeList textNodes = element.getElementsByTagName(ShortText.TEXT);
+            for (int j = 0; j < textNodes.getLength(); j++) {
+                Element textElement = (Element) textNodes.item(j);
+                String lang = textElement.getAttribute(ShortText.LANG);
+                String value = textElement.getAttribute(ShortText.VALUE);
                 ShortText shortText = new ShortText().lang(lang).text(value);
                 shortTexts.add(shortText);
             }
@@ -106,7 +109,7 @@ public class XmlFileReader {
     }
     private void validator(Document document) throws IOException {
         try {
-            String xsdFile = "Aufgabe2/resources/material_export.xsd";
+            String xsdFile = Constants.VALIDATION_FILE_PATH;
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = schemaFactory.newSchema(new File(xsdFile));
 
@@ -115,7 +118,7 @@ public class XmlFileReader {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new IOException("XML validation failed.");
+            throw new IOException(Constants.VALIDATION_FAILED);
         }
     }
 }
