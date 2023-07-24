@@ -1,5 +1,5 @@
 public class ShortText {
-    private String matNr;
+    private String matnr;
     private String lang;
     private String text;
 
@@ -8,11 +8,16 @@ public class ShortText {
     public static String VALUE = "value";
 
     public String getMatnr() {
-        return matNr;
+        return matnr;
     }
 
-    public void setMatNr(String matNr) {
-        this.matNr = matNr;
+    public void setMatnr(String matnr) {
+        this.matnr = matnr;
+    }
+
+    public ShortText matnr(String matnr){
+        this.matnr = matnr;
+        return this;
     }
 
     public String getLang() {

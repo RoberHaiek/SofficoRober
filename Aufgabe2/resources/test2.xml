@@ -1,0 +1,14 @@
+<?xml verding="UTF-8"?>
+<material_export >
+    <record>
+        <mat></mat>
+    </record>
+    <record>
+        <matnr>4716</matnr>
+        <price>5.4</price>
+        <description>
+            <text lang="DE" value="Gut" />
+            <text lang="EN" value="Good" />
+        </description>
+    </record>
+</mat>
