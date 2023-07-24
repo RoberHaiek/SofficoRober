@@ -1,7 +1,7 @@
 import java.nio.file.Paths;
 
 public class Main {
-    public static void main( String [] args ){
+    public static void main( String [] args ) throws Exception {
         XmlFileReader xmlFileReader = new XmlFileReader(Paths.get(args[0]));
         xmlFileReader.startWatching();
     }
