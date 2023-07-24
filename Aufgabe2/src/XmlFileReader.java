@@ -18,21 +18,14 @@ import java.util.logging.Logger;
 
 public class XmlFileReader {
 
-    private Set<String> processedFiles = new HashSet<>();
-    private Map<String, InternalFile> failedFiles = new HashMap<>();
-    private final Path folderPath;
-    private final List<String> fileTypes;
-    private final MySQLAccess dao;
-    private final int period = 5;
+    private static Set<String> processedFiles = new HashSet<>();
+    private static Map<String, InternalFile> failedFiles = new HashMap<>();
+    private static final List<String> fileTypes = Arrays.asList(".xml");
+    private static final MySQLAccess dao = MySQLAccess.getInstance();
+    private static final int period = 5;
     private static final Logger logger = Logger.getLogger(XmlFileReader.class.getName());
 
-    public XmlFileReader(Path folderPath) {
-        this.folderPath = folderPath;
-        this.fileTypes = Arrays.asList(".xml");
-        this.dao = new MySQLAccess();
-    }
-
-    public void startWatching() {
+    public static void startWatching(Path folderPath) {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         Runnable folderWatcherTask = () -> {
             try {
@@ -65,7 +58,7 @@ public class XmlFileReader {
         executor.scheduleAtFixedRate(folderWatcherTask, 0, period, TimeUnit.SECONDS);
     }
 
-    private List<Material> readXmlFile(Path filePath) throws IOException, ParserConfigurationException, SAXException {
+    private static List<Material> readXmlFile(Path filePath) throws IOException, ParserConfigurationException, SAXException {
 
         List<Material> materials = new ArrayList<>();
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -91,7 +84,7 @@ public class XmlFileReader {
         return materials;
     }
 
-    private void addDescriptionElements(NodeList descriptionNodes, Material material){
+    private static void addDescriptionElements(NodeList descriptionNodes, Material material){
         List<ShortText> shortTexts = new ArrayList<>();
         for(int i=0; i<descriptionNodes.getLength(); i++){
             Element element = (Element) descriptionNodes.item(i);
@@ -107,7 +100,7 @@ public class XmlFileReader {
         }
         material.setShortText(shortTexts);
     }
-    private void validator(Document document) throws SAXException, IOException {
+    private static void validator(Document document) throws SAXException, IOException {
 
         String xsdFile = Constants.VALIDATION_FILE_PATH;
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -117,24 +110,24 @@ public class XmlFileReader {
         validator.validate(new DOMSource(document));
     }
 
-    private boolean isXmlSuffix(String fileName){
+    private static boolean isXmlSuffix(String fileName){
         return fileName.endsWith(fileTypes.get(0));
     }
 
-    private boolean isNotProcessed(String fileName){
+    private static boolean isNotProcessed(String fileName){
         return !processedFiles.contains(fileName);
     }
 
-    private boolean isNotFailed(String fileName){
+    private static boolean isNotFailed(String fileName){
         return !failedFiles.containsKey(fileName);
     }
 
-    private boolean isFailedButModified(String fileName, long lastModified){
+    private static boolean isFailedButModified(String fileName, long lastModified){
         return failedFiles.containsKey(fileName) && (lastModified != failedFiles.get(fileName).getTimestamp());
     }
 
 
-    private void exceptionHandler(Exception e, String fileName, long lastModified){
+    private static void exceptionHandler(Exception e, String fileName, long lastModified){
         failedFiles.put(fileName, new InternalFile().fileName(fileName).timestamp(lastModified));
         logger.severe(new MessageCode.ParsingExceptionBuilder()
                 .withSourceFileName(fileName)
@@ -142,7 +135,7 @@ public class XmlFileReader {
                 .build().getMessage());
     }
 
-    private void exceptionHandler(Exception e){
+    private static void exceptionHandler(Exception e){
         logger.severe(e.toString());
     }
 }

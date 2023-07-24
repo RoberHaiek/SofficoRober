@@ -5,10 +5,21 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 
 public class MySQLAccess {
+
+    private static MySQLAccess instance;
     private Connection connect = null;
     private Statement statement = null;
     private PreparedStatement preparedStatement = null;
     private static final Logger logger = Logger.getLogger(MySQLAccess.class.getName());
+
+    private MySQLAccess() {}
+
+    public static MySQLAccess getInstance() {
+        if (instance == null) {
+            instance = new MySQLAccess();
+        }
+        return instance;
+    }
 
     public void storeShortText(ShortText shortText){
         try {
