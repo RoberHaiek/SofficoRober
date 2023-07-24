@@ -3,6 +3,7 @@ import java.util.List;
 public class Material {
     private String matNr;
     private double price;
+
     public static String RECORD = "record";
     public static String MATNR = "matnr";
     public static String PRICE = "price";

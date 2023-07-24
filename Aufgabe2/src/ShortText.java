@@ -1,9 +1,19 @@
 public class ShortText {
+    private String matNr;
     private String lang;
     private String text;
+
     public static String TEXT = "text";
     public static String LANG = "lang";
     public static String VALUE = "value";
+
+    public String getMatnr() {
+        return matNr;
+    }
+
+    public void setMatNr(String matNr) {
+        this.matNr = matNr;
+    }
 
     public String getLang() {
         return lang;
