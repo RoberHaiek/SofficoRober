@@ -10,9 +10,7 @@ import javax.xml.validation.Validator;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,14 +18,17 @@ import java.util.logging.Logger;
 
 public class XmlFileReader {
 
+    private Set<String> processedFiles = new HashSet<>();
     private final Path folderPath;
-    private final int period = 5;
     private final List<String> fileTypes;
+    MySQLAccess dao;
+    private final int period = 5;
     private static final Logger logger = Logger.getLogger(XmlFileReader.class.getName());
 
     public XmlFileReader(Path folderPath) {
         this.folderPath = folderPath;
         this.fileTypes = Arrays.asList(".xml");
+        this.dao = new MySQLAccess();
     }
 
     public void startWatching() {
@@ -37,18 +38,24 @@ public class XmlFileReader {
             try {
                 Files.walkFileTree(folderPath, new SimpleFileVisitor<>() {
                     @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(fileTypes.get(0))) {
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (file.toString().endsWith(fileTypes.get(0))  && !processedFiles.contains(file.toString())) {
                             logger.info( Constants.NEW_FILE_DETECTED + file);
                             Path fullPath = folderPath.resolve(file);
                             try {
-                                readXmlFile(fullPath);
+                                List<Material> materials = readXmlFile(fullPath);
                                 logger.info(Constants.PARSING_SUCCESSFUL);
+                                for(Material material: materials) {
+                                    dao.storeMaterial(material);
+                                }
+                                processedFiles.add(file.toString());
                             } catch (ParserConfigurationException e) {
                                 throw new RuntimeException(e);
                             } catch (SAXException e) {
                                 throw new RuntimeException(e);
                             } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         }
@@ -63,7 +70,7 @@ public class XmlFileReader {
         executor.scheduleAtFixedRate(folderWatcherTask, 0, period, TimeUnit.SECONDS);
     }
 
-    private void readXmlFile(Path filePath) throws IOException, ParserConfigurationException, SAXException, InterruptedException {
+    private List<Material> readXmlFile(Path filePath) throws IOException, ParserConfigurationException, SAXException, InterruptedException {
 
         List<Material> materials = new ArrayList<>();
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -89,7 +96,7 @@ public class XmlFileReader {
             }
         }
 
-        Thread.sleep(Constants.THREAD_SLEEP_TIME);
+        return materials;
     }
 
     private void addDescriptionElements(NodeList descriptionNodes, Material material){
@@ -121,4 +128,5 @@ public class XmlFileReader {
             throw new IOException(Constants.VALIDATION_FAILED);
         }
     }
+
 }
