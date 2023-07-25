@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.logging.Logger;
 
 public class MySQLAccess {
@@ -47,10 +44,16 @@ public class MySQLAccess {
                     .getConnection(Constants.DATABASE_URL);
 
             statement = connect.createStatement();
-            preparedStatement = connect
-                    .prepareStatement("insert into  orchestra.materials values (?, ?)");
-            preparedStatement.setString(1, material.getMatNr());
-            preparedStatement.setDouble(2, material.getPrice());
+            if(isExists(material.getMatNr())) {
+                preparedStatement = connect.prepareStatement("update orchestra.materials set price = ? where matnr = ?");
+                preparedStatement.setDouble(1, material.getPrice());
+                preparedStatement.setString(2, material.getMatNr());
+            } else{
+                preparedStatement = connect
+                        .prepareStatement("insert into  orchestra.materials values (?, ?)");
+                preparedStatement.setString(1, material.getMatNr());
+                preparedStatement.setDouble(2, material.getPrice());
+            }
             preparedStatement.executeUpdate();
 
             for (ShortText shortText : material.getShortText()) {
@@ -73,6 +76,14 @@ public class MySQLAccess {
         } finally {
             close();
         }
+    }
+
+    private boolean isExists(String matnr) throws SQLException {
+        PreparedStatement checkStmt = connect.prepareStatement("SELECT COUNT(*) FROM orchestra.materials WHERE matnr = ?");
+        checkStmt.setString(1, matnr);
+        ResultSet resultSet = checkStmt.executeQuery();
+        resultSet.next();
+        return resultSet.getInt(1) > 0;
     }
 
     private void close() {
