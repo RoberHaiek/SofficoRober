@@ -21,7 +21,7 @@ public class MySQLAccess {
         return instance;
     }
 
-    public void storeShortText(ShortText shortText){
+    public synchronized void storeShortText(ShortText shortText){
         try {
             preparedStatement = connect
                     .prepareStatement("insert into  orchestra.short_texts values (?, ?, ?)");
@@ -38,7 +38,7 @@ public class MySQLAccess {
         }
     }
 
-    public void storeMaterial(Material material) throws Exception {
+    public synchronized void storeMaterial(Material material) throws Exception {
         try {
             // This will load the MySQL driver, each DB has its own driver
             Class.forName(Constants.DRIVER_NAME);
