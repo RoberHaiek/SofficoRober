@@ -26,7 +26,7 @@ public class FileContentCopier {
 			int inputFileLength = fileInputStream.read(content);
 			int offset = 0;
 
-			while(inputFileLength >= 0){
+			while(inputFileLength > 0){
 				fileOutputStream.write(content, offset, Math.min(inputFileLength, Constants.BUFFER_SIZE));
 				offset += Constants.BUFFER_SIZE;
 				inputFileLength -= Constants.BUFFER_SIZE;
